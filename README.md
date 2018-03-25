@@ -1,5 +1,5 @@
 # View的事件体系
-##1 View基础知识
+## 1 View基础知识
 - 1 View是Android中所有控件的基类，不管是简单的Button、TextView还是复杂的LinearLayout、RelativeLayout、ListView，他们的共同基类都是View。View可以单独的控件，也可以是多个控件组成的一个控件，这种关系就形成了View的树结构。
 - 2 View的位置主要由它的四个丁点来决定
     - top、left、right、bottom
