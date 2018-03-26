@@ -123,5 +123,40 @@
 - 4 mScroller.computeScrollOffset()返回true表示需要继续滑动，返回true表示滑动结束
 - 总结：Scroller本身并不能实现View的滑动，它需要配合View的computeScroll方法才能完成弹性滑动的效果，它不断让View重绘，而每次重绘滑动起始时间会有一个时间间隔，通过这个间隔Scroller就可以得出View当前的滑动距离，知道了滑动距离就可以通过scrollTo()方法完成View的滑动
        
+## 4 View的事件分发机制
+### 1 View事件传递规则
+- 1 所谓点击事件的分发，其实就是对MotionEvent事件的分发过程。即当一个MotionEvent产生了以后，系统需要把这个事件传递给一个具体的View。事件分发过程由三个很重要的方法来共同完成
+    - 1 dispatchTouchEvent()
+        -  用来进行事件的分发。如果事件能够传递给当前的View，那么该View的此方法一定会被调用，返回结果受当前View的onTouchEvent和下级View的dispatchTouchEvent()的影响，表示是否消耗当前事件
+    - 2 onInterceptTouchEvent()
+        - 在dispatchTouchEvent()方法内部调用，用来判断是否拦截某个事件，如果当前View拦截了这个事件，那么在同一个事件序列中，此方法不会被再次调用，返回结果表示是否拦截当前事件。
+    - 3 onTouchEvent()    
+        - 在dispatchTouchEvent()方法中调用，用力处理点击事件，返回结果表示是否消耗当前事件，如果不消耗，则在同一个时间序列中，当前View无法再次接收到事件
+- 2 调用过程    
+             
+         //这三个函数调用的伪代码
+         public boolean dispatchTouchEvent(MotionEvent ev){
+             boolean consume = false;
+             if(onIntercepTouchEvent(ev)){
+                consume = onTouchEvent(ev);
+             }else {
+                consume = child.dispatchTouchEvent(ev);
+             }      
+         }
         
-        
+     - 1 对于一个ViewGroup,点击事件产生后，会调用dispatchTouchEvent()
+     - 2 如果这个ViewGroup的onInterceptionTouchEvent()方法返回true,表示要拦截当前事件，接着事件就会交给ViewGroup的onTouchEvent()处理
+     - 3 如果这个ViewGroup的onInterceptionTouchEvent()方法返回false,表示ViewGroup不拦截当前事件，这时候会继续传递给它的子元素，接着子元素的dispatchTouchEvent()方法会被调用
+- 3 优先级
+    - 给View设置了onTouchListener，其优先级比onTouchEvent()方法要高，onTouchListener (onTouch方法)返回true, onTouchEvent()方法将不会被调用
+    - 在onTouchEvent方法中，如果当前设置由onClickListener，那么它的onClick方法会被调用，onClickListener的优先级最低
+- 4 传递过程
+    - 一个点击事件产生后，传递过程如下： Activity -> Window -> View
+    - 如果一个View的onTouchEvent返回false，那么它芙蓉泣的onTouchEvent()将会被调用
+    - 如果所有的元素都不处理这个事件，那么这个事件最终将会被传递给Activity，即Activity的onTouchEvent方法会被调用     
+- 5 总结
+    - 某个View一旦决定拦截，那么这个事件序列只能由它来处理，并且它的onInterceptTouchEvent()方法不会仔被调用（设置了标志位）
+    - ViewGroup默认不拦截任何事件，Android中的ViewGroup的onInterceptTouchEvent方法默认返回false        
+    - View没有onInterceptTouchEvent方法，一旦有事件传递给它，那么它的onTouchEvent方法就会被调用
+    - View的enable属性并不影响onTouchEvent的默认返回值，哪怕一个View是disable状态的，只要它的clickable或者longClickable有一个为true，那么它的onTouchEvent就返回true
+    - 可以通过requestDisallowInterceptTouchEvent方法可以在子元素中干预父元素的事件分发过程，但是ACTION_DOWN事件除外
