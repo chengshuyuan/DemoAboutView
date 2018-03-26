@@ -95,7 +95,7 @@
             mButton.requestLayout();
             //或者 mButton.setLayoutParams(params);
 
-## 2 View的弹性滑动
+## 3 View的弹性滑动
 ### 1 使用Scroller
 - 1 Scroller的典型使用方法
     
@@ -117,7 +117,7 @@
                 scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
                 postInvalidate();
             }
-        }}
+        }
 - 2 invalidate()方法会导致View重绘，在View的draw方法中又会去调用computeScroll()方法
 - 3 在computeScroll()方法中会向Scroller对象中获取当前的scrollX和scrollY,然后通过scrollTo()函数实现滑动
 - 4 mScroller.computeScrollOffset()返回true表示需要继续滑动，返回true表示滑动结束
