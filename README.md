@@ -68,10 +68,31 @@
    - invalidate与postInvalidate()的区别
         - invalidate: 滑动重绘View树，并且从头到尾不会触发onMeasure()方法，只能在UI线程执行，重绘效率高
         - postalidate: postInvalidate函数既可以在UI线程执行，也可以在非UI线程执行。但是重绘效率低
-           
-         
-         
-   
         
+## 2 View的滑动        
+- 1 通过三种方法可以实现View的滑动
+    - 1 通过View本身提供的scrollTo/scrollBy方法
+    - 2 通过动画给View施加平移效果
+    - 3 通过改变View的LayoutParams使得View重新布局从而实现滑动
+- 2 scrollTo、scrollBy
+     - scrollTo()方法实现了基于传递参数的绝对滑动
+     - scrollBy()方法是调用scrollTo()方法实现的，实现了基于位置的相对滑动
+     - mScrollX 、mScrollY
+        - mScrollX的值总是等于View的View上边缘和View的内容上边缘在水平方向上的距离
+        - mScrollY的值总是等于View的View左边缘和View的内容左边缘在垂直方向上的距离
+        - View边缘是指View的位置，由四个顶点组成，而内容的边缘是指View中内容的边缘
+        - scrollTo、scrollBy方法只能改变View的内容的位置而不能改变View的位置
+- 3 使用动画        
+     - 使用动画来移动View，主要操作View的translationX和translationY属性
+     - 既可以采用传统的View动画，也可以采用属性动画，如果采用属性动画的话，为了兼容3.0以下的版本，需要采用开源动画库
+     - View动画是对View的影像做操作，并不能真正改变View的位置参数，如果希望保留动画后的状态，需要将fillAfter属性设置为true（点击事件会出问题，所以View有操作时，不适用于这种方法）
+ - 4 改变布局参数
+     - 改变布局参数，即改变LayoutParams
+           
+            MarginLayoutParams params = (MarginLayoutParams)mButton.getLayoutParams();
+            params.width += 100;
+            params.leftMargin += 100;
+            mButton.requestLayout();
+            //或者 mButton.setLayoutParams(params);
    
    
