@@ -148,15 +148,15 @@
      - 2 如果这个ViewGroup的onInterceptionTouchEvent()方法返回true,表示要拦截当前事件，接着事件就会交给ViewGroup的onTouchEvent()处理
      - 3 如果这个ViewGroup的onInterceptionTouchEvent()方法返回false,表示ViewGroup不拦截当前事件，这时候会继续传递给它的子元素，接着子元素的dispatchTouchEvent()方法会被调用
 - 3 优先级
-    - 给View设置了onTouchListener，其优先级比onTouchEvent()方法要高，onTouchListener (onTouch方法)返回true, onTouchEvent()方法将不会被调用
-    - 在onTouchEvent方法中，如果当前设置由onClickListener，那么它的onClick方法会被调用，onClickListener的优先级最低
+    - 1 给View设置了onTouchListener，其优先级比onTouchEvent()方法要高，onTouchListener (onTouch方法)返回true, onTouchEvent()方法将不会被调用
+    - 2 在onTouchEvent方法中，如果当前设置由onClickListener，那么它的onClick方法会被调用，onClickListener的优先级最低
 - 4 传递过程
-    - 一个点击事件产生后，传递过程如下： Activity -> Window -> View
-    - 如果一个View的onTouchEvent返回false，那么它芙蓉泣的onTouchEvent()将会被调用
-    - 如果所有的元素都不处理这个事件，那么这个事件最终将会被传递给Activity，即Activity的onTouchEvent方法会被调用     
+    - 1 一个点击事件产生后，传递过程如下： Activity -> Window -> View
+    - 2 如果一个View的onTouchEvent返回false，那么它芙蓉泣的onTouchEvent()将会被调用
+    - 3 如果所有的元素都不处理这个事件，那么这个事件最终将会被传递给Activity，即Activity的onTouchEvent方法会被调用     
 - 5 总结
-    - 某个View一旦决定拦截，那么这个事件序列只能由它来处理，并且它的onInterceptTouchEvent()方法不会仔被调用（设置了标志位）
-    - ViewGroup默认不拦截任何事件，Android中的ViewGroup的onInterceptTouchEvent方法默认返回false        
-    - View没有onInterceptTouchEvent方法，一旦有事件传递给它，那么它的onTouchEvent方法就会被调用
-    - View的enable属性并不影响onTouchEvent的默认返回值，哪怕一个View是disable状态的，只要它的clickable或者longClickable有一个为true，那么它的onTouchEvent就返回true
-    - 可以通过requestDisallowInterceptTouchEvent方法可以在子元素中干预父元素的事件分发过程，但是ACTION_DOWN事件除外
+    - 1 某个View一旦决定拦截，那么这个事件序列只能由它来处理，并且它的onInterceptTouchEvent()方法不会仔被调用（设置了标志位）
+    - 2 ViewGroup默认不拦截任何事件，Android中的ViewGroup的onInterceptTouchEvent方法默认返回false        
+    - 3 View没有onInterceptTouchEvent方法，一旦有事件传递给它，那么它的onTouchEvent方法就会被调用
+    - 4 View的enable属性并不影响onTouchEvent的默认返回值，哪怕一个View是disable状态的，只要它的clickable或者longClickable有一个为true，那么它的onTouchEvent就返回true
+    - 5 可以通过requestDisallowInterceptTouchEvent方法可以在子元素中干预父元素的事件分发过程，但是ACTION_DOWN事件除外
