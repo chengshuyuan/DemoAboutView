@@ -94,5 +94,34 @@
             params.leftMargin += 100;
             mButton.requestLayout();
             //或者 mButton.setLayoutParams(params);
+
+## 2 View的弹性滑动
+### 1 使用Scroller
+- 1 Scroller的典型使用方法
+    
+        Scroller mScroller = new Scroller(context);
+        //缓慢移动到指定的位置
+        //仅仅调用这个方法是无法让View滑动的，还需要借助computeScroll中的invalidate方法
+        private void smoothScrollTo(int destX, int destY){
+            int deltaX = destX - scrollX;
+            //1000ms内滑向destX,效果就是慢慢滑动
+            //scrollX\scrollY:起点， deltaX\deltaY:滑动的距离
+            mScroller.startScroll(scrollX, 0, deltaX, 0, 1000);
+            invalidate();
+        }
    
-   
+        //compteScroll方法在View中是一个空方法，因此需要我们自己去实现    
+        @Override
+        ppublic void computeScroll(){
+            if(mScroller.computeScrollOffset()){
+                scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+                postInvalidate();
+            }
+        }}
+- 2 invalidate()方法会导致View重绘，在View的draw方法中又会去调用computeScroll()方法
+- 3 在computeScroll()方法中会向Scroller对象中获取当前的scrollX和scrollY,然后通过scrollTo()函数实现滑动
+- 4 mScroller.computeScrollOffset()返回true表示需要继续滑动，返回true表示滑动结束
+- 总结：Scroller本身并不能实现View的滑动，它需要配合View的computeScroll方法才能完成弹性滑动的效果，它不断让View重绘，而每次重绘滑动起始时间会有一个时间间隔，通过这个间隔Scroller就可以得出View当前的滑动距离，知道了滑动距离就可以通过scrollTo()方法完成View的滑动
+       
+        
+        
